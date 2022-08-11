@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-material.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="寄存器重命名寄存器重命名是为了解决指令间的与寄存器读写相关的方法。这种方法势必要采取设计比AR数量更多的PR的基础来使得寄存器重命名可行。 《超标量处理器设计》书中一共三种方法：使用ROB作为ARF扩展；使用PRF作为ARF扩展；使用统一的PRF。书中所写已经很详细，不再重复赘述。这里只是我自己在学习时候的疑惑和理解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="寄存器重命名">
+<meta property="og:url" content="http://example.com/2022/08/12/%E5%AF%84%E5%AD%98%E5%99%A8%E9%87%8D%E5%91%BD%E5%90%8D/index.html">
+<meta property="og:site_name" content="寒穹阁">
+<meta property="og:description" content="寄存器重命名寄存器重命名是为了解决指令间的与寄存器读写相关的方法。这种方法势必要采取设计比AR数量更多的PR的基础来使得寄存器重命名可行。 《超标量处理器设计》书中一共三种方法：使用ROB作为ARF扩展；使用PRF作为ARF扩展；使用统一的PRF。书中所写已经很详细，不再重复赘述。这里只是我自己在学习时候的疑惑和理解。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-08-11T18:37:05.000Z">
+<meta property="article:modified_time" content="2022-08-11T18:38:59.177Z">
+<meta property="article:author" content="Hammerift">
+<meta property="article:tag" content="CPU设计">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2022/08/12/%E5%AF%84%E5%AD%98%E5%99%A8%E9%87%8D%E5%91%BD%E5%90%8D/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>寄存器重命名 | 寒穹阁</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">寒穹阁</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-resources">
+
+    <a href="/resources/" rel="section"><i class="fa fa-download fa-fw"></i>资源</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/08/12/%E5%AF%84%E5%AD%98%E5%99%A8%E9%87%8D%E5%91%BD%E5%90%8D/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Hammerift">
+      <meta itemprop="description" content="选择的依据怎样不后悔">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="寒穹阁">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          寄存器重命名
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-08-12 02:37:05 / 修改时间：02:38:59" itemprop="dateCreated datePublished" datetime="2022-08-12T02:37:05+08:00">2022-08-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="寄存器重命名"><a href="#寄存器重命名" class="headerlink" title="寄存器重命名"></a>寄存器重命名</h1><p>寄存器重命名是为了解决指令间的与寄存器读写相关的方法。这种方法势必要采取设计比AR数量更多的PR的基础来使得寄存器重命名可行。</p>
+<p>《超标量处理器设计》书中一共三种方法：使用ROB作为ARF扩展；使用PRF作为ARF扩展；使用统一的PRF。<br>书中所写已经很详细，不再重复赘述。这里只是我自己在学习时候的疑惑和理解。</p>
+<span id="more"></span>
+
+<h2 id="ROB做ARF扩展"><a href="#ROB做ARF扩展" class="headerlink" title="ROB做ARF扩展"></a>ROB做ARF扩展</h2><p>使用ROB作为ARF扩展这种途径是利用了ROB本身就存储了没retired的结果。这样只要一条指令decode完毕，就会存入ROB(本质是一个FIFO),这个指令在ROB中的编号就可以代表了结果实际存在的位置，而这正是逻辑寄存器与“物理寄存器”之间的映射关系。这个方法很机智地利用这一点，使得在指令进行重命名的时候，它被写入ROB，从此以后任何对寄存器状态的更改都在ROB中发生(ROB是excute实际的操作对象)，直到这条指令retired后，才将结果写入ARF。这样就可以不增加额外部件而实现功能。</p>
+<p>问题在于，1. 如果一条指令要用到之前指令的结果，就会产生一种判断，就是所需的寄存器的结果最后一次更新是在ROB中还是已经写入ARF中呢？这就需要一个模块来专门指明这个寄存器的位置，即重命名映射表(mapping table); 2. 如果一个程序块中很多都是不对寄存器进行操作的指令，那么这些指令在ROB中的表项里原定放寄存器值的空间就会被浪费。</p>
+<h2 id="PRF做ARF扩展"><a href="#PRF做ARF扩展" class="headerlink" title="PRF做ARF扩展"></a>PRF做ARF扩展</h2><p>这个方法是上一个的进步版，解决了上文第二个问题。这个方法将上个方法中ROB作为excute实际操作对象的功能剥离出来，单独做一个模块叫PRF，替代上个方法中的ROB。而且只有有目的寄存器的指令才会写入PRF中 (上一个方法做不到的原因是，ROB是一个在超标量处理器中必定存在的模块而且必定存储所有指令的信息，但是这个信息是可选的，单纯的ROB可以只存储指令顺序信息，因此可以把功能剥离) ，这样就节省了没有目的寄存器的指令在上个方法ROB中浪费的空间。当然，和上个方法相同，“最新值问题”(上个方法问题一)仍然存在，所以还是需要mapping table。</p>
+<h2 id="统一PRF（最终形态）"><a href="#统一PRF（最终形态）" class="headerlink" title="统一PRF（最终形态）"></a>统一PRF（最终形态）</h2><p>这个方法将上个方法中的PRF和ARF合并，使得只存在一个PRF存储所有的变化，这样PRF中的每个寄存器都有两种大状态：空闲(Free) 和 使用中(used) 。可以使用一个空闲列表(Free list)来指示哪个寄存器处于Free状态。当一个指令进入重命名阶段而且有目的寄存器时，就会占据一个空闲的PRF中的寄存器单元，这个单元就变为被使用状态。此后这个单元会经历三个过程，即：结果未知，结果已知，退休。</p>
+<p>当指令进入退休时刻，其结果才能被使用，理论上是这样。但是如果单靠这个统一的PRF和对应的mapping table 是做不到的，因为所有结果都可以在PRF中查到。所以需要单独做一个只指出退休指令结果所在PRF单元位置的mapping table。每当指令退休，对应的映射关系写入这个mapping table中，就避免了可能错误的状态被显露出来。(这个新的模块所解决的问题，在前几种方法中是很自然地被解决的，因为前两种方法retire的指令结果单独放在ARF中)。</p>
+<p>理论上来说，当一个物理寄存器所连接的最后一条指令从流水线退休，这个物理寄存器就该被释放了，但是物理寄存器并不能直接知道这个信息。用我自己的话说，一个指令的目的寄存器(逻辑寄存器)指向一个物理寄存器，只有当这个目的寄存器(逻辑寄存器)被改为指向另一个物理寄存器时这个物理寄存器才能被释放，否则只要有指令将这个逻辑寄存器作为源寄存器使用，这个映射关系就不能改变。所以为了实现这个功能要使ROB不仅存储指令经过重命名之后所得出的指令类型、结果、目的寄存器当前映射到的物理寄存器位置和指令异常的信息，还要存储目的寄存器之前映射到的物理寄存器位置，使得当这条指令retired被ROB踢出队列时可以释放之前的映射关系。</p>
+<blockquote>
+<p>PS：书中对于目的寄存器的描述有一点模糊，是因为经过重命名的指令目的寄存器是物理寄存器，没有的就是逻辑寄存器。我倾向于将目的寄存器表示为逻辑寄存器，将经过重命名的目的寄存器表述为“目的寄存器所映射到的物理寄存器”，相对比较好理解。</p>
+</blockquote>
+<blockquote>
+<p>PS：这段学习完后对ROB的功能有更深的理解。如果说逻辑寄存器存储了处理器状态，ROB就存储了指令状态，而且在架构中是在重命名之后，从一条指令重命名完成后其状态就被ROB存储。</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Hammerift
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://example.com/2022/08/12/%E5%AF%84%E5%AD%98%E5%99%A8%E9%87%8D%E5%91%BD%E5%90%8D/" title="寄存器重命名">http://example.com/2022/08/12/寄存器重命名/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CPU%E8%AE%BE%E8%AE%A1/" rel="tag"># CPU设计</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/08/12/%E5%AE%9E%E4%BE%8B%E7%90%86%E8%A7%A3/" rel="prev" title="AMD_Opteron_Cache实例理解">
+      <i class="fa fa-chevron-left"></i> AMD_Opteron_Cache实例理解
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/08/12/Vivado%E4%B8%AD/" rel="next" title="Vivado中readmemh和readmemb如何使用">
+      Vivado中readmemh和readmemb如何使用 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%84%E5%AD%98%E5%99%A8%E9%87%8D%E5%91%BD%E5%90%8D"><span class="nav-number">1.</span> <span class="nav-text">寄存器重命名</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ROB%E5%81%9AARF%E6%89%A9%E5%B1%95"><span class="nav-number">1.1.</span> <span class="nav-text">ROB做ARF扩展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PRF%E5%81%9AARF%E6%89%A9%E5%B1%95"><span class="nav-number">1.2.</span> <span class="nav-text">PRF做ARF扩展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%9F%E4%B8%80PRF%EF%BC%88%E6%9C%80%E7%BB%88%E5%BD%A2%E6%80%81%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">统一PRF（最终形态）</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Hammerift"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Hammerift</p>
+  <div class="site-description" itemprop="description">选择的依据怎样不后悔</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Hammerift</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共5.9k字</span>
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,0' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

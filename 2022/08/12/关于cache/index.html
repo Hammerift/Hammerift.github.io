@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-material.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="关于cachecache的存在实际上是一种不得已的妥协，如果存储设备的发展速度能比处理器快，就不会有cache的存在。cache的设计体现了一种折中取舍的设计思想。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于cache">
+<meta property="og:url" content="http://example.com/2022/08/12/%E5%85%B3%E4%BA%8Ecache/index.html">
+<meta property="og:site_name" content="寒穹阁">
+<meta property="og:description" content="关于cachecache的存在实际上是一种不得已的妥协，如果存储设备的发展速度能比处理器快，就不会有cache的存在。cache的设计体现了一种折中取舍的设计思想。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-08-11T18:43:48.000Z">
+<meta property="article:modified_time" content="2022-08-11T18:44:59.359Z">
+<meta property="article:author" content="Hammerift">
+<meta property="article:tag" content="CPU设计">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2022/08/12/%E5%85%B3%E4%BA%8Ecache/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>关于cache | 寒穹阁</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">寒穹阁</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-resources">
+
+    <a href="/resources/" rel="section"><i class="fa fa-download fa-fw"></i>资源</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/08/12/%E5%85%B3%E4%BA%8Ecache/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Hammerift">
+      <meta itemprop="description" content="选择的依据怎样不后悔">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="寒穹阁">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          关于cache
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-08-12 02:43:48 / 修改时间：02:44:59" itemprop="dateCreated datePublished" datetime="2022-08-12T02:43:48+08:00">2022-08-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="关于cache"><a href="#关于cache" class="headerlink" title="关于cache"></a>关于cache</h1><p>cache的存在实际上是一种不得已的妥协，如果存储设备的发展速度能比处理器快，就不会有cache的存在。cache的设计体现了一种折中取舍的设计思想。</p>
+<span id="more"></span>
+<p>三种相联方式的cache<br>直接映射，组相联，全相联的本质区别实际上就是cache和下级存储空间的映射关系不同，直接映射是所有地址中Index段相同的数据块都可以放入一个cache line。组相联映射是所有地址中Index段相同的数据块都可以放入一个以上的cache line,这些cache line的集合称为一个cache set，可以说Index指向一个cache set。全相联抛弃了Index的限制，所有的数据块都可以放在cache中，寻找的方法只是通过Tag比对，相当于内容寻址。</p>
+<p>PS：在cache的讨论中，基本数据单位是一个数据块，以Data Block讨论时，地址最后的几块就没有意义了，所以在理解的时候可以忽略数据块内的位移。把主要理解方向放在Tag和Index上。</p>
+<p>PS：直接映射相当于“单路组相联”，因为地址中Index相同的数据块只能放到一个cache line中，这样如果在一个两路组相联的cache中有三个Index相同的数据块频繁的被访问，就会经常发生冲突缺失。为了解决这种Conflict miss，增加Index相同数据可以使用的line，使得Index相同的数据块同时被操作的端口增加(这是我的理解)，减少冲突缺失的可能。但是，并不能完全消除，全相联的方式可以这么说，你明明有别的set里面的line空着没被占用，我直接把Index取消，只要你经常被访问，你就可以放进cache里，这样肯定不会缺失了。但是单单用Tag寻找line肯定是很慢很慢的，全相联的缺点在于速度，延迟相当大，所以全相联cache容量一般都不大。</p>
+<p>Cache的访问方式<br>由于在实际处理器中Tag和Data部分分开放置，所以对Tag和Data的访问可以是并行也可以是串行。并行访问就是把index同时传给Tag RAM和Data RAM，把Tag和Data同时读出来，通过Tag的值比对确认读出来的Data中哪一line是目的line，从而选出目的line，再选出对应的Block。这种方法的问题在于，读出多路数据后要进行选择，肯定会有一个大的多路选择器，这个会提高功耗。串行访问就是先把Index传给Tag RAM，取出对应line的Tag进行比对，hit之后把Index和目的line编号传到Data RAM中，直接读出对应的值。串行访问就没有并行访问所需要的多路选择器，所以功耗有所降低，但是由于完全串行，load指令的延迟肯定会有所延长，所以一般还会进行流水化以降低时间消耗。在超标量处理器中，由于可以对指令进行调度，所以可以掩盖cache的延迟。一般会选择串行访问的cache。普通处理器反之。</p>
+<p>Cache的写入方式<br>当进行store指令时，为了保持cache和下层存储的一致性，假设要写入的地址在cache中有对应的地址，则需要将要写入的值更新到下层存储中，如果直接写入下层存储，这就是写通。<br>由于对DRAM的读写延迟相对处理器速度来说很高，所以还有一种写回方法：当写入的地址在cache中有映射，就把对应cache line的值更新，并且把这个cache line置为dirty状态，当这个cache line需要被替换(注意是替换不是被改变其中的值)的时候再将其更新到下级存储中。</p>
+<p>以上是讨论每次都命中的情况，如果发生缺失情况怎么办呢？如果发生缺失，就把对应的变化直接反应到下级存储中，比如store指令缺失就直接写入下级存储，load指令缺失就从下级存储直接读出来数据块写入一个cache line(这个由替换算法决定)，这就是non-write allocate。与之对应有write allocate,举例比如store指令缺失，把对应下层存储的数据块读出来，和要写的数据合并，再写入cache中。写回通常和write allocate配合使用，写通和non-write allocate配合使用。</p>
+<p>write back -write allocate类型的cache结构比较复杂，所以回顾一下这种cache的流程：首先是load，如果没发生缺失，直接读出cache值，如果发生缺失，根据替换算法找到被替换的cache line ,如果这个cache line 是dirty状态，就把它的值更新到下层存储器，使它的状态不是dirty。如果不是dirty就直接将下层存储数据读出放入这个line中，最后确保这个line的状态是not dirty，就可以将数据提交回指令；其次是store,如果没发生缺失，就直接写入对应的cache，并将对应line的状态改为dirty，如果发生缺失，根据替换算法找到被替换的line,如果它是dirty，就更新到下层存储，如果不是就把下层存储对应store要存储位置的数据块提出，与要存储的数据合并，写入替换line中并改状态为dirty，结束。</p>
+<p>Cache的替换策略<br>书中介绍了两种基本思路，最少使用替换和随机替换；随机替换不考虑，最少使用替换就是为每个line设置一个年龄状态位，每次替换选择年纪最小的那个替换。伪LRU其实就是把年纪位剥离出来，以类似二分查找的方式把最少使用的位置指出来。</p>
+<p>Cache的优化策略<br>1.写缓存<br>如果发生缺失状况，势必要对下层存储读数据，如果是dirty的替换line还要将其数据更新到下层存储数据中，问题就在于下层存储一般都是单端口，这就要求要先把dirty line中的数据写入下层存储中，再读取新的数据。这样的处理时间会很长，所以在中间可以设置一个写缓存，当需要写数据，先将数据写入写缓存，等下级存储器空闲以后再进行写入。<br>这个对写通类型的cache尤为重要，但是会增加复杂度，因为如果写缓存和下层存储中有同一个数据地址，显然写缓存中是最新的，所以需要有在写缓存中找地址的电路。</p>
+<p>2.流水线<br>就是上面讲的串行cache</p>
+<p>3.多级结构<br>一般L1可以采用写通，L2可以采用写回。<br>L1和L2有两种关系，一种是L2包含L1中的所有内容，另一种是L2与L1没有交集，前者对数据一致性友好，后者容量高</p>
+<p>4.Victim Cache<br>victim cache 可以保存最近被踢出cache的数据，所有的cache way都可以用它来提高cache way的数量通常victim cache 使用全相联方式，容量较小，可以存储4到16个数据</p>
+<p>5.Filter Cache<br>Filter cache是在cache之前，只有当filter cache中的某个数据被使用两次才会被放入cache。victim cache是在cache之后，两者设计思路类似。</p>
+<p>6.预取 prefetching<br>双刃剑，比较难把握，等我水平更高一点再做。</p>
+<p>多端口cache<br>书中三种多端口设计，True Multi-port; Multiple Cache Copies; Multi-banking;<br>主要看第三种就可以，这里的难点在于怎么理解bank这个概念。bank就是把一个cache line分成几个可以单独操作的部分，使得一个cache line可以同时被多个读写请求访问。我在这里的问题是由于data block和cache line 的概念不清。实际上block就是cache line 中真正的数据部分，因为实际上还有别的信息比如valid等。在初次理解这个地方可以把这俩暂时混为一谈。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Hammerift
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://example.com/2022/08/12/%E5%85%B3%E4%BA%8Ecache/" title="关于cache">http://example.com/2022/08/12/关于cache/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CPU%E8%AE%BE%E8%AE%A1/" rel="tag"># CPU设计</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/08/12/CPU%E8%AE%BE%E8%AE%A1%E5%AE%9E%E6%88%98%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" rel="prev" title="CPU设计实战环境搭建">
+      <i class="fa fa-chevron-left"></i> CPU设计实战环境搭建
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/08/12/%E4%B8%80%E4%BA%9B%E5%BF%A0%E5%91%8A/" rel="next" title="一些忠告">
+      一些忠告 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Ecache"><span class="nav-number">1.</span> <span class="nav-text">关于cache</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Hammerift"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Hammerift</p>
+  <div class="site-description" itemprop="description">选择的依据怎样不后悔</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Hammerift</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共5.9k字</span>
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,0' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
