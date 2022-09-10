@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-material.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="计算机网络笔记一一些基本概念">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机网络笔记一">
+<meta property="og:url" content="http://example.com/2022/09/10/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%AC%94%E8%AE%B0%E4%B8%80/index.html">
+<meta property="og:site_name" content="寒穹阁">
+<meta property="og:description" content="计算机网络笔记一一些基本概念">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-09-09T18:37:05.000Z">
+<meta property="article:modified_time" content="2022-09-10T15:07:00.323Z">
+<meta property="article:author" content="Hammerift">
+<meta property="article:tag" content="计算机网络">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2022/09/10/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%AC%94%E8%AE%B0%E4%B8%80/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>计算机网络笔记一 | 寒穹阁</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">寒穹阁</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-resources">
+
+    <a href="/resources/" rel="section"><i class="fa fa-download fa-fw"></i>资源</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/09/10/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%AC%94%E8%AE%B0%E4%B8%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Hammerift">
+      <meta itemprop="description" content="选择的依据怎样不后悔">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="寒穹阁">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          计算机网络笔记一
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-09-10 02:37:05 / 修改时间：23:07:00" itemprop="dateCreated datePublished" datetime="2022-09-10T02:37:05+08:00">2022-09-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="计算机网络笔记一"><a href="#计算机网络笔记一" class="headerlink" title="计算机网络笔记一"></a>计算机网络笔记一</h1><h2 id="一些基本概念"><a href="#一些基本概念" class="headerlink" title="一些基本概念"></a>一些基本概念</h2><span id="more"></span>
+<h3 id="1-计算机网络组成"><a href="#1-计算机网络组成" class="headerlink" title="1. 计算机网络组成"></a>1. 计算机网络组成</h3><p>计算机网络由若干结点node和链接节点的链路link组成。<br>结点一般是由：1.主机及其上运行的应用程序（信息源）； 2.路由器、交换机等网络交换设备（中继节点）构成<br>链路一般是由：1.接入网链路（主机连接到互联网的链路）；2.主干链路（路由器间的链路）构成</p>
+<h3 id="2-互联网"><a href="#2-互联网" class="headerlink" title="2.互联网"></a>2.互联网</h3><p>特指全球最大的开放的特定互连网。互连网是任意计算机互连起来的网络。互联网采用TCP&#x2F;IP协议族，是协议族。<br>协议是通信的规范。<br>从服务的角度来看，互联网就是分布式应用和为分布式应用进程提供服务的网络。</p>
+<h3 id="3-互联网的三个发展阶段"><a href="#3-互联网的三个发展阶段" class="headerlink" title="3. 互联网的三个发展阶段"></a>3. 互联网的三个发展阶段</h3><p>1.单个网络采用TCP&#x2F;IP协议的ARPANNET<br>2.三级结构互联网分为主干网，地区网，校园网<br>3.多层次ISP结构的互联网</p>
+<p>ISP即网络服务提供商，提供多个商用的互联网主干网。有主干ISP，地区ISP，本地ISP三种。主干ISP最大，在第一层。地区ISP通过主干ISP相连，在第二层。本地ISP给用户提供直接服务，本地ISP可以和地区ISP相连，也可以和主干ISP相连</p>
+<p>IXP即互联网交换点，主要作用就是允许两个网络直接相连并交换分组，而不需要再通过第三个网络来转发分组。（同级通信）</p>
+<h3 id="4-互联网组成"><a href="#4-互联网组成" class="headerlink" title="4.互联网组成"></a>4.互联网组成</h3><p>边缘部分：用户直接使用的主机<br>核心部分：大量网络和链接这些网络的路由器组成，为边缘部分提供服务的。</p>
+<h3 id="5-互联网边缘部分"><a href="#5-互联网边缘部分" class="headerlink" title="5.互联网边缘部分"></a>5.互联网边缘部分</h3><p>主机即端系统，主机之间通信实际上是主机之间的进程之间通信。</p>
+<p>边缘端系统之间的通信两种方式，client&#x2F;server方式和peer&#x2F;peer方式</p>
+<p>client&#x2F;server方式，即请求-响应模式，client进程要知道server地址，不需要复杂硬件，server进程反之。</p>
+<p>peer&#x2F;peer方式，即对等连接，通信时不区分服务端和客户端</p>
+<h3 id="6-互联网核心部分"><a href="#6-互联网核心部分" class="headerlink" title="6.互联网核心部分"></a>6.互联网核心部分</h3><p>核心部分提供边缘主机的联通性，其中，路由器是一种专用计算机，专用于实现分组交换，任务是转发收到的分组。路由器收到一个分组，先暂时存储，用首部目的地址查转发表后将分组转发到合适的端口，这种方式是存储转发技术的一个表现形式。</p>
+<h4 id="1-数据传输方式"><a href="#1-数据传输方式" class="headerlink" title="(1)数据传输方式"></a>(1)数据传输方式</h4><p>PS：关于分组，对于一个要发送的数据（报文message），在发送之前将报文划分为小数据段，再加上必要的控制信息组成的首部（每个数据段都有相同的），数据段加上首部就是一个分组，这样把一个报文分成几个分组用来传输。</p>
+<blockquote>
+<p>交换方式的演变：<br>1.电路交换circuit switching,简单的终端-中继-终端三级结构，通信过程相应的为“建立连接–通信–释放连接”。重要特点就是在通信时间内，两终端始终占用端到端的资源<br>2.报文转发，存储转发技术，但是不把数据分为分组，而是直接以报文存储和传输。<br>2.分组交换采用存储转发技术。就是上文路由器做的事。</p>
+</blockquote>
+<blockquote>
+<p>PS :对于电路交换方式而言，网络带宽资源以时分，频分等方式分割成一个个piece，供给多用户使用。分组交换则是把数据分割，让所有用户都占有最大带宽，按需使用</p>
+</blockquote>
+<p>由于采用存储转发技术，使得分组交换在通信时所占用的资源仅仅是链路中分组传输到的部分，是一段一段的断断续续地占用，省去了建立连接和释放连接的开销。缺点是要在存储转发时的排队时延和首部的空间开销。</p>
+<blockquote>
+<p>PS: 用处理器设计的角度来类比。电路交换就是单周期处理，一条结束才能接另一条，报文交换就是简单流水线，级数少，消耗适中。分组交换就是超标量流水，级数多，硬件消耗大，深度过深还可能引起时延过大，但是对突发任务较为适应。</p>
+</blockquote>
+<p>若要连续传送大量的数据， 且其传送时间远大于连接建立时间， 则 电路交换的传输速率较快。 报文交换和分组交换不需要预先分配传输带宽， 在传送突发数据时可提高整个网络的信道。利用率。 由千一个分组的长度往往远小于整个报文的长度， 因此分组交换比报文交换延迟低</p>
+<blockquote>
+<p>PS:分组交换依旧比电路交换延迟高得多，原因在于，数据的发送在延迟中占大头，分组交换有多次转发行为，转发几次就有几次发送延迟。</p>
+</blockquote>
+<p>分组交换的方式下，如果数据到达速率大于链路传输速率，那么分组就会在一个中间节点排队等待传输，这是排队时延，如果路由器缓存用光，分组将会被丢弃，就是丢包</p>
+<h4 id="2-路径决定方式"><a href="#2-路径决定方式" class="headerlink" title="(2)路径决定方式"></a>(2)路径决定方式</h4><p>路由器通过路由算法根据许多信息算出路由转发表，从而决定分组的转发端口。</p>
+<h3 id="分组交换按照网络层是否有链接分为两种方式："><a href="#分组交换按照网络层是否有链接分为两种方式：" class="headerlink" title="分组交换按照网络层是否有链接分为两种方式："></a>分组交换按照网络层是否有链接分为两种方式：</h3><p>1.数据报方式<br>每个分组都携带了目标主机的完整地址，每个分组的传送是独立路由，路径可能会不同。就像信封<br>2.虚电路方式<br>主机和目标主机通信要先握手，在中继节点建立起网络层的链接状态。每个节点都有相应的标识，用虚电路号用来标识传输链路。就像打电话。</p>
+<p>报文交换的时延小， 同时也具有更好的灵活性。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Hammerift
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://example.com/2022/09/10/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%AC%94%E8%AE%B0%E4%B8%80/" title="计算机网络笔记一">http://example.com/2022/09/10/计算机网络笔记一/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag"># 计算机网络</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/09/10/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%AC%94%E8%AE%B0%E4%BA%8C/" rel="prev" title="计算机网络笔记二">
+      <i class="fa fa-chevron-left"></i> 计算机网络笔记二
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/09/10/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%94%E8%AE%B0/" rel="next" title="操作系统笔记">
+      操作系统笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%AC%94%E8%AE%B0%E4%B8%80"><span class="nav-number">1.</span> <span class="nav-text">计算机网络笔记一</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">一些基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%BB%84%E6%88%90"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. 计算机网络组成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BA%92%E8%81%94%E7%BD%91"><span class="nav-number">1.1.2.</span> <span class="nav-text">2.互联网</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%BA%92%E8%81%94%E7%BD%91%E7%9A%84%E4%B8%89%E4%B8%AA%E5%8F%91%E5%B1%95%E9%98%B6%E6%AE%B5"><span class="nav-number">1.1.3.</span> <span class="nav-text">3. 互联网的三个发展阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%BA%92%E8%81%94%E7%BD%91%E7%BB%84%E6%88%90"><span class="nav-number">1.1.4.</span> <span class="nav-text">4.互联网组成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E4%BA%92%E8%81%94%E7%BD%91%E8%BE%B9%E7%BC%98%E9%83%A8%E5%88%86"><span class="nav-number">1.1.5.</span> <span class="nav-text">5.互联网边缘部分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E4%BA%92%E8%81%94%E7%BD%91%E6%A0%B8%E5%BF%83%E9%83%A8%E5%88%86"><span class="nav-number">1.1.6.</span> <span class="nav-text">6.互联网核心部分</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E6%96%B9%E5%BC%8F"><span class="nav-number">1.1.6.1.</span> <span class="nav-text">(1)数据传输方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E8%B7%AF%E5%BE%84%E5%86%B3%E5%AE%9A%E6%96%B9%E5%BC%8F"><span class="nav-number">1.1.6.2.</span> <span class="nav-text">(2)路径决定方式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%BB%84%E4%BA%A4%E6%8D%A2%E6%8C%89%E7%85%A7%E7%BD%91%E7%BB%9C%E5%B1%82%E6%98%AF%E5%90%A6%E6%9C%89%E9%93%BE%E6%8E%A5%E5%88%86%E4%B8%BA%E4%B8%A4%E7%A7%8D%E6%96%B9%E5%BC%8F%EF%BC%9A"><span class="nav-number">1.1.7.</span> <span class="nav-text">分组交换按照网络层是否有链接分为两种方式：</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Hammerift"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Hammerift</p>
+  <div class="site-description" itemprop="description">选择的依据怎样不后悔</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Hammerift</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共8.2k字</span>
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,0' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
